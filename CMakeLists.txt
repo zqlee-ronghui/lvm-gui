@@ -27,6 +27,7 @@ message(STATUS ======================${lvm-gui_BINARY_DIR})
 add_executable(${PROJECT_NAME}
     src/main.cpp
     src/mainwindow.cpp
+    src/config.cpp
     proto/message.pb.cc)
 target_link_libraries(${PROJECT_NAME}
     Qt5::Widgets

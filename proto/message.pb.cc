@@ -44,6 +44,11 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<SysInfo>
      _instance;
 } _SysInfo_default_instance_;
+class ScanDefaultTypeInternal {
+public:
+ ::google::protobuf::internal::ExplicitlyConstructed<Scan>
+     _instance;
+} _Scan_default_instance_;
 class MeasResultDefaultTypeInternal {
 public:
  ::google::protobuf::internal::ExplicitlyConstructed<MeasResult>
@@ -54,6 +59,7 @@ public:
  ::google::protobuf::internal::ExplicitlyConstructed<Message>
      _instance;
   const ::lrobot::lidarvolumemeas::SysInfo* info_;
+  const ::lrobot::lidarvolumemeas::Scan* scan_;
   const ::lrobot::lidarvolumemeas::MeasResult* result_;
 } _Message_default_instance_;
 
@@ -62,7 +68,7 @@ namespace protobuf_proto_2fmessage_2eproto {
 
 namespace {
 
-::google::protobuf::Metadata file_level_metadata[7];
+::google::protobuf::Metadata file_level_metadata[8];
 const ::google::protobuf::EnumDescriptor* file_level_enum_descriptors[1];
 
 }  // namespace
@@ -78,6 +84,7 @@ PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::AuxillaryParseTableField
 };
 PROTOBUF_CONSTEXPR_VAR ::google::protobuf::internal::ParseTable const
     TableStruct::schema[] GOOGLE_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
+  { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
   { NULL, NULL, 0, -1, -1, -1, -1, NULL, false },
@@ -141,6 +148,13 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(SysInfo, temperature_),
   1,
   0,
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Scan, _has_bits_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Scan, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Scan, points_),
+  ~0u,
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MeasResult, _has_bits_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(MeasResult, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -156,8 +170,10 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_ATTRIBUTE_SECTION
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, _oneof_case_[0]),
   ~0u,  // no _weak_field_map_
   offsetof(MessageDefaultTypeInternal, info_),
+  offsetof(MessageDefaultTypeInternal, scan_),
   offsetof(MessageDefaultTypeInternal, result_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Message, data_),
+  ~0u,
   ~0u,
   ~0u,
 };
@@ -167,8 +183,9 @@ static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_ATTR
   { 22, 29, sizeof(Model)},
   { 31, 40, sizeof(Statistic)},
   { 44, 51, sizeof(SysInfo)},
-  { 53, 60, sizeof(MeasResult)},
-  { 62, 70, sizeof(Message)},
+  { 53, 59, sizeof(Scan)},
+  { 60, 67, sizeof(MeasResult)},
+  { 69, 78, sizeof(Message)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -177,6 +194,7 @@ static ::google::protobuf::Message const * const file_default_instances[] = {
   reinterpret_cast<const ::google::protobuf::Message*>(&_Model_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_Statistic_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_SysInfo_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&_Scan_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_MeasResult_default_instance_),
   reinterpret_cast<const ::google::protobuf::Message*>(&_Message_default_instance_),
 };
@@ -199,7 +217,7 @@ void protobuf_AssignDescriptorsOnce() {
 void protobuf_RegisterTypes(const ::std::string&) GOOGLE_ATTRIBUTE_COLD;
 void protobuf_RegisterTypes(const ::std::string&) {
   protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 7);
+  ::google::protobuf::internal::RegisterAllTypes(file_level_metadata, 8);
 }
 
 }  // namespace
@@ -217,7 +235,9 @@ void TableStruct::InitDefaultsImpl() {
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_Statistic_default_instance_);_SysInfo_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
-      &_SysInfo_default_instance_);_MeasResult_default_instance_._instance.DefaultConstruct();
+      &_SysInfo_default_instance_);_Scan_default_instance_._instance.DefaultConstruct();
+  ::google::protobuf::internal::OnShutdownDestroyMessage(
+      &_Scan_default_instance_);_MeasResult_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
       &_MeasResult_default_instance_);_Message_default_instance_._instance.DefaultConstruct();
   ::google::protobuf::internal::OnShutdownDestroyMessage(
@@ -227,6 +247,8 @@ void TableStruct::InitDefaultsImpl() {
       ::lrobot::lidarvolumemeas::Model::internal_default_instance());
   _Message_default_instance_.info_ = const_cast< ::lrobot::lidarvolumemeas::SysInfo*>(
       ::lrobot::lidarvolumemeas::SysInfo::internal_default_instance());
+  _Message_default_instance_.scan_ = const_cast< ::lrobot::lidarvolumemeas::Scan*>(
+      ::lrobot::lidarvolumemeas::Scan::internal_default_instance());
   _Message_default_instance_.result_ = const_cast< ::lrobot::lidarvolumemeas::MeasResult*>(
       ::lrobot::lidarvolumemeas::MeasResult::internal_default_instance());
 }
@@ -248,18 +270,20 @@ void AddDescriptorsImpl() {
       "ngle\"J\n\tStatistic\022\016\n\006length\030\001 \002(\001\022\r\n\005wid"
       "th\030\002 \002(\001\022\016\n\006height\030\003 \002(\001\022\016\n\006volume\030\004 \002(\001"
       "\"L\n\007SysInfo\022,\n\005state\030\001 \002(\0162\035.lrobot.lida"
-      "rvolumemeas.State\022\023\n\013temperature\030\002 \002(\001\"p"
-      "\n\nMeasResult\0224\n\tstatistic\030\001 \002(\0132!.lrobot"
-      ".lidarvolumemeas.Statistic\022,\n\005model\030\002 \002("
-      "\0132\035.lrobot.lidarvolumemeas.Model\"x\n\007Mess"
-      "age\022/\n\004info\030\001 \001(\0132\037.lrobot.lidarvolumeme"
-      "as.SysInfoH\000\0224\n\006result\030\002 \001(\0132\".lrobot.li"
-      "darvolumemeas.MeasResultH\000B\006\n\004data*5\n\005St"
-      "ate\022\010\n\004Idle\020\001\022\r\n\tMeasuring\020\002\022\023\n\017MeasureF"
-      "inished\020\003"
+      "rvolumemeas.State\022\023\n\013temperature\030\002 \002(\001\"5"
+      "\n\004Scan\022-\n\006points\030\001 \003(\0132\035.lrobot.lidarvol"
+      "umemeas.Point\"p\n\nMeasResult\0224\n\tstatistic"
+      "\030\001 \002(\0132!.lrobot.lidarvolumemeas.Statisti"
+      "c\022,\n\005model\030\002 \002(\0132\035.lrobot.lidarvolumemea"
+      "s.Model\"\246\001\n\007Message\022/\n\004info\030\001 \001(\0132\037.lrob"
+      "ot.lidarvolumemeas.SysInfoH\000\022,\n\004scan\030\002 \001"
+      "(\0132\034.lrobot.lidarvolumemeas.ScanH\000\0224\n\006re"
+      "sult\030\003 \001(\0132\".lrobot.lidarvolumemeas.Meas"
+      "ResultH\000B\006\n\004data*5\n\005State\022\010\n\004Idle\020\001\022\r\n\tM"
+      "easuring\020\002\022\023\n\017MeasureFinished\020\003"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 689);
+      descriptor, 791);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "proto/message.proto", &protobuf_RegisterTypes);
 }
@@ -2334,6 +2358,284 @@ void SysInfo::set_temperature(double value) {
 // ===================================================================
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
+const int Scan::kPointsFieldNumber;
+#endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
+
+Scan::Scan()
+  : ::google::protobuf::Message(), _internal_metadata_(NULL) {
+  if (GOOGLE_PREDICT_TRUE(this != internal_default_instance())) {
+    protobuf_proto_2fmessage_2eproto::InitDefaults();
+  }
+  SharedCtor();
+  // @@protoc_insertion_point(constructor:lrobot.lidarvolumemeas.Scan)
+}
+Scan::Scan(const Scan& from)
+  : ::google::protobuf::Message(),
+      _internal_metadata_(NULL),
+      _has_bits_(from._has_bits_),
+      _cached_size_(0),
+      points_(from.points_) {
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  // @@protoc_insertion_point(copy_constructor:lrobot.lidarvolumemeas.Scan)
+}
+
+void Scan::SharedCtor() {
+  _cached_size_ = 0;
+}
+
+Scan::~Scan() {
+  // @@protoc_insertion_point(destructor:lrobot.lidarvolumemeas.Scan)
+  SharedDtor();
+}
+
+void Scan::SharedDtor() {
+}
+
+void Scan::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* Scan::descriptor() {
+  protobuf_proto_2fmessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_proto_2fmessage_2eproto::file_level_metadata[kIndexInFileMessages].descriptor;
+}
+
+const Scan& Scan::default_instance() {
+  protobuf_proto_2fmessage_2eproto::InitDefaults();
+  return *internal_default_instance();
+}
+
+Scan* Scan::New(::google::protobuf::Arena* arena) const {
+  Scan* n = new Scan;
+  if (arena != NULL) {
+    arena->Own(n);
+  }
+  return n;
+}
+
+void Scan::Clear() {
+// @@protoc_insertion_point(message_clear_start:lrobot.lidarvolumemeas.Scan)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  points_.Clear();
+  _has_bits_.Clear();
+  _internal_metadata_.Clear();
+}
+
+bool Scan::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
+  ::google::protobuf::uint32 tag;
+  // @@protoc_insertion_point(parse_start:lrobot.lidarvolumemeas.Scan)
+  for (;;) {
+    ::std::pair< ::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
+    tag = p.first;
+    if (!p.second) goto handle_unusual;
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .lrobot.lidarvolumemeas.Point points = 1;
+      case 1: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(10u /* 10 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_points()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      default: {
+      handle_unusual:
+        if (tag == 0) {
+          goto success;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, _internal_metadata_.mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+success:
+  // @@protoc_insertion_point(parse_success:lrobot.lidarvolumemeas.Scan)
+  return true;
+failure:
+  // @@protoc_insertion_point(parse_failure:lrobot.lidarvolumemeas.Scan)
+  return false;
+#undef DO_
+}
+
+void Scan::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // @@protoc_insertion_point(serialize_start:lrobot.lidarvolumemeas.Scan)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .lrobot.lidarvolumemeas.Point points = 1;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->points_size()); i < n; i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->points(static_cast<int>(i)), output);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        _internal_metadata_.unknown_fields(), output);
+  }
+  // @@protoc_insertion_point(serialize_end:lrobot.lidarvolumemeas.Scan)
+}
+
+::google::protobuf::uint8* Scan::InternalSerializeWithCachedSizesToArray(
+    bool deterministic, ::google::protobuf::uint8* target) const {
+  (void)deterministic; // Unused
+  // @@protoc_insertion_point(serialize_to_array_start:lrobot.lidarvolumemeas.Scan)
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .lrobot.lidarvolumemeas.Point points = 1;
+  for (unsigned int i = 0,
+      n = static_cast<unsigned int>(this->points_size()); i < n; i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      InternalWriteMessageNoVirtualToArray(
+        1, this->points(static_cast<int>(i)), deterministic, target);
+  }
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields(), target);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:lrobot.lidarvolumemeas.Scan)
+  return target;
+}
+
+size_t Scan::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:lrobot.lidarvolumemeas.Scan)
+  size_t total_size = 0;
+
+  if (_internal_metadata_.have_unknown_fields()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        _internal_metadata_.unknown_fields());
+  }
+  // repeated .lrobot.lidarvolumemeas.Point points = 1;
+  {
+    unsigned int count = static_cast<unsigned int>(this->points_size());
+    total_size += 1UL * count;
+    for (unsigned int i = 0; i < count; i++) {
+      total_size +=
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->points(static_cast<int>(i)));
+    }
+  }
+
+  int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = cached_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void Scan::MergeFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_merge_from_start:lrobot.lidarvolumemeas.Scan)
+  GOOGLE_DCHECK_NE(&from, this);
+  const Scan* source =
+      ::google::protobuf::internal::DynamicCastToGenerated<const Scan>(
+          &from);
+  if (source == NULL) {
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:lrobot.lidarvolumemeas.Scan)
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:lrobot.lidarvolumemeas.Scan)
+    MergeFrom(*source);
+  }
+}
+
+void Scan::MergeFrom(const Scan& from) {
+// @@protoc_insertion_point(class_specific_merge_from_start:lrobot.lidarvolumemeas.Scan)
+  GOOGLE_DCHECK_NE(&from, this);
+  _internal_metadata_.MergeFrom(from._internal_metadata_);
+  ::google::protobuf::uint32 cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  points_.MergeFrom(from.points_);
+}
+
+void Scan::CopyFrom(const ::google::protobuf::Message& from) {
+// @@protoc_insertion_point(generalized_copy_from_start:lrobot.lidarvolumemeas.Scan)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void Scan::CopyFrom(const Scan& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:lrobot.lidarvolumemeas.Scan)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Scan::IsInitialized() const {
+  if (!::google::protobuf::internal::AllAreInitialized(this->points())) return false;
+  return true;
+}
+
+void Scan::Swap(Scan* other) {
+  if (other == this) return;
+  InternalSwap(other);
+}
+void Scan::InternalSwap(Scan* other) {
+  using std::swap;
+  points_.InternalSwap(&other->points_);
+  swap(_has_bits_[0], other->_has_bits_[0]);
+  _internal_metadata_.Swap(&other->_internal_metadata_);
+  swap(_cached_size_, other->_cached_size_);
+}
+
+::google::protobuf::Metadata Scan::GetMetadata() const {
+  protobuf_proto_2fmessage_2eproto::protobuf_AssignDescriptorsOnce();
+  return protobuf_proto_2fmessage_2eproto::file_level_metadata[kIndexInFileMessages];
+}
+
+#if PROTOBUF_INLINE_NOT_IN_HEADERS
+// Scan
+
+// repeated .lrobot.lidarvolumemeas.Point points = 1;
+int Scan::points_size() const {
+  return points_.size();
+}
+void Scan::clear_points() {
+  points_.Clear();
+}
+const ::lrobot::lidarvolumemeas::Point& Scan::points(int index) const {
+  // @@protoc_insertion_point(field_get:lrobot.lidarvolumemeas.Scan.points)
+  return points_.Get(index);
+}
+::lrobot::lidarvolumemeas::Point* Scan::mutable_points(int index) {
+  // @@protoc_insertion_point(field_mutable:lrobot.lidarvolumemeas.Scan.points)
+  return points_.Mutable(index);
+}
+::lrobot::lidarvolumemeas::Point* Scan::add_points() {
+  // @@protoc_insertion_point(field_add:lrobot.lidarvolumemeas.Scan.points)
+  return points_.Add();
+}
+::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point >*
+Scan::mutable_points() {
+  // @@protoc_insertion_point(field_mutable_list:lrobot.lidarvolumemeas.Scan.points)
+  return &points_;
+}
+const ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point >&
+Scan::points() const {
+  // @@protoc_insertion_point(field_list:lrobot.lidarvolumemeas.Scan.points)
+  return points_;
+}
+
+#endif  // PROTOBUF_INLINE_NOT_IN_HEADERS
+
+// ===================================================================
+
+#if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int MeasResult::kStatisticFieldNumber;
 const int MeasResult::kModelFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
@@ -2763,6 +3065,7 @@ void MeasResult::set_allocated_model(::lrobot::lidarvolumemeas::Model* model) {
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Message::kInfoFieldNumber;
+const int Message::kScanFieldNumber;
 const int Message::kResultFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
@@ -2784,6 +3087,10 @@ Message::Message(const Message& from)
   switch (from.data_case()) {
     case kInfo: {
       mutable_info()->::lrobot::lidarvolumemeas::SysInfo::MergeFrom(from.info());
+      break;
+    }
+    case kScan: {
+      mutable_scan()->::lrobot::lidarvolumemeas::Scan::MergeFrom(from.scan());
       break;
     }
     case kResult: {
@@ -2843,6 +3150,10 @@ void Message::clear_data() {
       delete data_.info_;
       break;
     }
+    case kScan: {
+      delete data_.scan_;
+      break;
+    }
     case kResult: {
       delete data_.result_;
       break;
@@ -2888,10 +3199,22 @@ bool Message::MergePartialFromCodedStream(
         break;
       }
 
-      // optional .lrobot.lidarvolumemeas.MeasResult result = 2;
+      // optional .lrobot.lidarvolumemeas.Scan scan = 2;
       case 2: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(18u /* 18 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_scan()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional .lrobot.lidarvolumemeas.MeasResult result = 3;
+      case 3: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
                input, mutable_result()));
         } else {
@@ -2931,9 +3254,13 @@ void Message::SerializeWithCachedSizes(
       ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
         1, *data_.info_, output);
       break;
+    case kScan:
+      ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+        2, *data_.scan_, output);
+      break;
     case kResult:
       ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-        2, *data_.result_, output);
+        3, *data_.result_, output);
       break;
     default: ;
   }
@@ -2957,10 +3284,15 @@ void Message::SerializeWithCachedSizes(
         InternalWriteMessageNoVirtualToArray(
           1, *data_.info_, deterministic, target);
       break;
+    case kScan:
+      target = ::google::protobuf::internal::WireFormatLite::
+        InternalWriteMessageNoVirtualToArray(
+          2, *data_.scan_, deterministic, target);
+      break;
     case kResult:
       target = ::google::protobuf::internal::WireFormatLite::
         InternalWriteMessageNoVirtualToArray(
-          2, *data_.result_, deterministic, target);
+          3, *data_.result_, deterministic, target);
       break;
     default: ;
   }
@@ -2989,7 +3321,14 @@ size_t Message::ByteSizeLong() const {
           *data_.info_);
       break;
     }
-    // optional .lrobot.lidarvolumemeas.MeasResult result = 2;
+    // optional .lrobot.lidarvolumemeas.Scan scan = 2;
+    case kScan: {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          *data_.scan_);
+      break;
+    }
+    // optional .lrobot.lidarvolumemeas.MeasResult result = 3;
     case kResult: {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -3034,6 +3373,10 @@ void Message::MergeFrom(const Message& from) {
       mutable_info()->::lrobot::lidarvolumemeas::SysInfo::MergeFrom(from.info());
       break;
     }
+    case kScan: {
+      mutable_scan()->::lrobot::lidarvolumemeas::Scan::MergeFrom(from.scan());
+      break;
+    }
     case kResult: {
       mutable_result()->::lrobot::lidarvolumemeas::MeasResult::MergeFrom(from.result());
       break;
@@ -3063,6 +3406,12 @@ bool Message::IsInitialized() const {
     case kInfo: {
       if (has_info()) {
         if (!this->info().IsInitialized()) return false;
+      }
+      break;
+    }
+    case kScan: {
+      if (has_scan()) {
+        if (!this->scan().IsInitialized()) return false;
       }
       break;
     }
@@ -3148,7 +3497,55 @@ void Message::set_allocated_info(::lrobot::lidarvolumemeas::SysInfo* info) {
   // @@protoc_insertion_point(field_set_allocated:lrobot.lidarvolumemeas.Message.info)
 }
 
-// optional .lrobot.lidarvolumemeas.MeasResult result = 2;
+// optional .lrobot.lidarvolumemeas.Scan scan = 2;
+bool Message::has_scan() const {
+  return data_case() == kScan;
+}
+void Message::set_has_scan() {
+  _oneof_case_[0] = kScan;
+}
+void Message::clear_scan() {
+  if (has_scan()) {
+    delete data_.scan_;
+    clear_has_data();
+  }
+}
+ const ::lrobot::lidarvolumemeas::Scan& Message::scan() const {
+  // @@protoc_insertion_point(field_get:lrobot.lidarvolumemeas.Message.scan)
+  return has_scan()
+      ? *data_.scan_
+      : ::lrobot::lidarvolumemeas::Scan::default_instance();
+}
+::lrobot::lidarvolumemeas::Scan* Message::mutable_scan() {
+  if (!has_scan()) {
+    clear_data();
+    set_has_scan();
+    data_.scan_ = new ::lrobot::lidarvolumemeas::Scan;
+  }
+  // @@protoc_insertion_point(field_mutable:lrobot.lidarvolumemeas.Message.scan)
+  return data_.scan_;
+}
+::lrobot::lidarvolumemeas::Scan* Message::release_scan() {
+  // @@protoc_insertion_point(field_release:lrobot.lidarvolumemeas.Message.scan)
+  if (has_scan()) {
+    clear_has_data();
+    ::lrobot::lidarvolumemeas::Scan* temp = data_.scan_;
+    data_.scan_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+void Message::set_allocated_scan(::lrobot::lidarvolumemeas::Scan* scan) {
+  clear_data();
+  if (scan) {
+    set_has_scan();
+    data_.scan_ = scan;
+  }
+  // @@protoc_insertion_point(field_set_allocated:lrobot.lidarvolumemeas.Message.scan)
+}
+
+// optional .lrobot.lidarvolumemeas.MeasResult result = 3;
 bool Message::has_result() const {
   return data_case() == kResult;
 }

@@ -45,6 +45,9 @@ extern ModelDefaultTypeInternal _Model_default_instance_;
 class Point;
 class PointDefaultTypeInternal;
 extern PointDefaultTypeInternal _Point_default_instance_;
+class Scan;
+class ScanDefaultTypeInternal;
+extern ScanDefaultTypeInternal _Scan_default_instance_;
 class Statistic;
 class StatisticDefaultTypeInternal;
 extern StatisticDefaultTypeInternal _Statistic_default_instance_;
@@ -745,6 +748,117 @@ class SysInfo : public ::google::protobuf::Message /* @@protoc_insertion_point(c
 };
 // -------------------------------------------------------------------
 
+class Scan : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:lrobot.lidarvolumemeas.Scan) */ {
+ public:
+  Scan();
+  virtual ~Scan();
+
+  Scan(const Scan& from);
+
+  inline Scan& operator=(const Scan& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  Scan(Scan&& from) noexcept
+    : Scan() {
+    *this = ::std::move(from);
+  }
+
+  inline Scan& operator=(Scan&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Scan& default_instance();
+
+  static inline const Scan* internal_default_instance() {
+    return reinterpret_cast<const Scan*>(
+               &_Scan_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    5;
+
+  void Swap(Scan* other);
+  friend void swap(Scan& a, Scan& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline Scan* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  Scan* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const Scan& from);
+  void MergeFrom(const Scan& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(Scan* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // repeated .lrobot.lidarvolumemeas.Point points = 1;
+  int points_size() const;
+  void clear_points();
+  static const int kPointsFieldNumber = 1;
+  const ::lrobot::lidarvolumemeas::Point& points(int index) const;
+  ::lrobot::lidarvolumemeas::Point* mutable_points(int index);
+  ::lrobot::lidarvolumemeas::Point* add_points();
+  ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point >*
+      mutable_points();
+  const ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point >&
+      points() const;
+
+  // @@protoc_insertion_point(class_scope:lrobot.lidarvolumemeas.Scan)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point > points_;
+  friend struct protobuf_proto_2fmessage_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
 class MeasResult : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:lrobot.lidarvolumemeas.MeasResult) */ {
  public:
   MeasResult();
@@ -786,7 +900,7 @@ class MeasResult : public ::google::protobuf::Message /* @@protoc_insertion_poin
                &_MeasResult_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    5;
+    6;
 
   void Swap(MeasResult* other);
   friend void swap(MeasResult& a, MeasResult& b) {
@@ -908,7 +1022,8 @@ class Message : public ::google::protobuf::Message /* @@protoc_insertion_point(c
 
   enum DataCase {
     kInfo = 1,
-    kResult = 2,
+    kScan = 2,
+    kResult = 3,
     DATA_NOT_SET = 0,
   };
 
@@ -917,7 +1032,7 @@ class Message : public ::google::protobuf::Message /* @@protoc_insertion_point(c
                &_Message_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    6;
+    7;
 
   void Swap(Message* other);
   friend void swap(Message& a, Message& b) {
@@ -973,10 +1088,19 @@ class Message : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::lrobot::lidarvolumemeas::SysInfo* release_info();
   void set_allocated_info(::lrobot::lidarvolumemeas::SysInfo* info);
 
-  // optional .lrobot.lidarvolumemeas.MeasResult result = 2;
+  // optional .lrobot.lidarvolumemeas.Scan scan = 2;
+  bool has_scan() const;
+  void clear_scan();
+  static const int kScanFieldNumber = 2;
+  const ::lrobot::lidarvolumemeas::Scan& scan() const;
+  ::lrobot::lidarvolumemeas::Scan* mutable_scan();
+  ::lrobot::lidarvolumemeas::Scan* release_scan();
+  void set_allocated_scan(::lrobot::lidarvolumemeas::Scan* scan);
+
+  // optional .lrobot.lidarvolumemeas.MeasResult result = 3;
   bool has_result() const;
   void clear_result();
-  static const int kResultFieldNumber = 2;
+  static const int kResultFieldNumber = 3;
   const ::lrobot::lidarvolumemeas::MeasResult& result() const;
   ::lrobot::lidarvolumemeas::MeasResult* mutable_result();
   ::lrobot::lidarvolumemeas::MeasResult* release_result();
@@ -986,6 +1110,7 @@ class Message : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   // @@protoc_insertion_point(class_scope:lrobot.lidarvolumemeas.Message)
  private:
   void set_has_info();
+  void set_has_scan();
   void set_has_result();
 
   inline bool has_data() const;
@@ -998,6 +1123,7 @@ class Message : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   union DataUnion {
     DataUnion() {}
     ::lrobot::lidarvolumemeas::SysInfo* info_;
+    ::lrobot::lidarvolumemeas::Scan* scan_;
     ::lrobot::lidarvolumemeas::MeasResult* result_;
   } data_;
   ::google::protobuf::uint32 _oneof_case_[1];
@@ -1383,6 +1509,40 @@ inline void SysInfo::set_temperature(double value) {
 
 // -------------------------------------------------------------------
 
+// Scan
+
+// repeated .lrobot.lidarvolumemeas.Point points = 1;
+inline int Scan::points_size() const {
+  return points_.size();
+}
+inline void Scan::clear_points() {
+  points_.Clear();
+}
+inline const ::lrobot::lidarvolumemeas::Point& Scan::points(int index) const {
+  // @@protoc_insertion_point(field_get:lrobot.lidarvolumemeas.Scan.points)
+  return points_.Get(index);
+}
+inline ::lrobot::lidarvolumemeas::Point* Scan::mutable_points(int index) {
+  // @@protoc_insertion_point(field_mutable:lrobot.lidarvolumemeas.Scan.points)
+  return points_.Mutable(index);
+}
+inline ::lrobot::lidarvolumemeas::Point* Scan::add_points() {
+  // @@protoc_insertion_point(field_add:lrobot.lidarvolumemeas.Scan.points)
+  return points_.Add();
+}
+inline ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point >*
+Scan::mutable_points() {
+  // @@protoc_insertion_point(field_mutable_list:lrobot.lidarvolumemeas.Scan.points)
+  return &points_;
+}
+inline const ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point >&
+Scan::points() const {
+  // @@protoc_insertion_point(field_list:lrobot.lidarvolumemeas.Scan.points)
+  return points_;
+}
+
+// -------------------------------------------------------------------
+
 // MeasResult
 
 // required .lrobot.lidarvolumemeas.Statistic statistic = 1;
@@ -1529,7 +1689,55 @@ inline void Message::set_allocated_info(::lrobot::lidarvolumemeas::SysInfo* info
   // @@protoc_insertion_point(field_set_allocated:lrobot.lidarvolumemeas.Message.info)
 }
 
-// optional .lrobot.lidarvolumemeas.MeasResult result = 2;
+// optional .lrobot.lidarvolumemeas.Scan scan = 2;
+inline bool Message::has_scan() const {
+  return data_case() == kScan;
+}
+inline void Message::set_has_scan() {
+  _oneof_case_[0] = kScan;
+}
+inline void Message::clear_scan() {
+  if (has_scan()) {
+    delete data_.scan_;
+    clear_has_data();
+  }
+}
+inline  const ::lrobot::lidarvolumemeas::Scan& Message::scan() const {
+  // @@protoc_insertion_point(field_get:lrobot.lidarvolumemeas.Message.scan)
+  return has_scan()
+      ? *data_.scan_
+      : ::lrobot::lidarvolumemeas::Scan::default_instance();
+}
+inline ::lrobot::lidarvolumemeas::Scan* Message::mutable_scan() {
+  if (!has_scan()) {
+    clear_data();
+    set_has_scan();
+    data_.scan_ = new ::lrobot::lidarvolumemeas::Scan;
+  }
+  // @@protoc_insertion_point(field_mutable:lrobot.lidarvolumemeas.Message.scan)
+  return data_.scan_;
+}
+inline ::lrobot::lidarvolumemeas::Scan* Message::release_scan() {
+  // @@protoc_insertion_point(field_release:lrobot.lidarvolumemeas.Message.scan)
+  if (has_scan()) {
+    clear_has_data();
+    ::lrobot::lidarvolumemeas::Scan* temp = data_.scan_;
+    data_.scan_ = NULL;
+    return temp;
+  } else {
+    return NULL;
+  }
+}
+inline void Message::set_allocated_scan(::lrobot::lidarvolumemeas::Scan* scan) {
+  clear_data();
+  if (scan) {
+    set_has_scan();
+    data_.scan_ = scan;
+  }
+  // @@protoc_insertion_point(field_set_allocated:lrobot.lidarvolumemeas.Message.scan)
+}
+
+// optional .lrobot.lidarvolumemeas.MeasResult result = 3;
 inline bool Message::has_result() const {
   return data_case() == kResult;
 }
@@ -1590,6 +1798,8 @@ inline Message::DataCase Message::data_case() const {
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
