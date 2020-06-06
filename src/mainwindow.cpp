@@ -8,6 +8,12 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   this->setWindowTitle ("lvm-gui");
 
+  db_.reset(new MYSQL());
+  mysql_init(db_.get());
+  if(mysql_real_connect(db_.get(), "localhost","ronghui","mysql-ronghui","lvm_db",0, NULL, CLIENT_FOUND_ROWS)) {
+    std::cout << "connect mysql success." << std::endl;
+  }
+
   config_ = new Config(this);
   config_->setModal(false);
 
@@ -68,10 +74,10 @@ void MainWindow::ReadData() {
         message.Clear();
         message.ParseFromArray(buffer.data() + 4, msg_length);
         switch(message.data_case()) {
-          case lrobot::lidarvolumemeas::Message::kInfo:
+          case lrobot::lidarvolumemeas::Message::kInfo: {
             statusLabel->setText(QString(lrobot::lidarvolumemeas::State_Name(message.info().state()).c_str()));
             break;
-          case lrobot::lidarvolumemeas::Message::kScan:
+          } case lrobot::lidarvolumemeas::Message::kScan: {
             clearmodel();
             if(message.scan().points().size() > 0) {
               for(auto p : message.scan().points()) {
@@ -81,10 +87,22 @@ void MainWindow::ReadData() {
             model->height = 1;
             model->width = model->points.size();
             model->is_dense = false;
+            float fovy = 0.8575f;
+            Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
+            intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
+            intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
+            intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
+
+            Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
+            extrinsics << 0.00711892,     0.10875,   -0.994044,     5.21231,
+                            0.999962, -0.00572975,  0.00653447,   0.0659031,
+                           -0.004985,   -0.994053,   -0.108786,     4.50848,
+                                   0,           0,           0,           1;
+            viewer->setCameraParameters(intrinsics, extrinsics);
             viewer->updatePointCloud(model, "model");
             ui->qvtkWidget->update();
             break;
-          case lrobot::lidarvolumemeas::Message::kResult:
+          } case lrobot::lidarvolumemeas::Message::kResult: {
             ui->length->setText(QString::number(message.result().statistic().length()));
             ui->width->setText(QString::number(message.result().statistic().width()));
             ui->height->setText(QString::number(message.result().statistic().height()));
@@ -106,9 +124,23 @@ void MainWindow::ReadData() {
             model->height = 1;
             model->width = model->points.size();
             model->is_dense = false;
+
+            float fovy = 0.81f;
+            Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
+            intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
+            intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
+            intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
+
+            Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
+            extrinsics <<  0.755122, -0.236257, -0.611534,   11.9141,
+                            0.65472,  0.319672,  0.684947,  -7.88965,
+                          0.0336673, -0.917601,  0.396073,  0.178935,
+                                  0,         0,         0,         1;
+            viewer->setCameraParameters(intrinsics, extrinsics);
             viewer->updatePointCloud(model, "model");
             ui->qvtkWidget->update();
             break;
+          }
         }
         buffer.remove(0, 4 + msg_length);
       } else {
@@ -142,6 +174,16 @@ void MainWindow::VisualSpin() {
   if (mesh->polygons.size() > 0) {
     viewer->updatePolygonMesh(*mesh, "mesh");
   }
+  auto pose = viewer->getViewerPose();
+  std::cout << "==================" << std::endl;
+  std::cout << "viewer pose: \n" << pose.matrix() << std::endl;
+
+  pcl::visualization::Camera camera;
+  viewer->getCameraParameters(camera);
+  std::cout << "camera fovy: " << camera.fovy << std::endl;
+  std::cout << "camera wind: " << camera.window_size[0] << ", " << camera.window_size[1] << std::endl;
+  std::cout << "ui size: " << ui->qvtkWidget->size().width() << ", " << ui->qvtkWidget->size().height() << std::endl;
+
   ui->qvtkWidget->update();
 }
 
@@ -165,8 +207,10 @@ void MainWindow::initviewer() {
   mesh->polygons.emplace_back(v);
 
   viewer->addPointCloud(model, "model");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "model");
   viewer->addPolygonMesh(*mesh, "mesh");
-  viewer->resetCamera();
+  viewer->initCameraParameters();
+  viewer->setBackgroundColor(164.0 / 255.0, 164.0 / 255.0, 164.0 / 255.0);
   ui->qvtkWidget->update();
   clearmodel();
 }

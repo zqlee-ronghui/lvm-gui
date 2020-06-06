@@ -12,6 +12,8 @@
 #include <QTimer>
 #include <QDateTime>
 
+#include "mysql/mysql.h"
+
 #include "pcl/point_types.h"
 #include "pcl/point_cloud.h"
 #include "pcl/PolygonMesh.h"
@@ -69,6 +71,8 @@ class MainWindow : public QMainWindow {
   pcl::visualization::PCLVisualizer::Ptr viewer;
   pcl::PointCloud<pcl::PointXYZ>::Ptr model;
   pcl::PolygonMeshPtr mesh;
+
+  std::unique_ptr<MYSQL> db_;
 };
 
 #endif // MAINWINDOW_H

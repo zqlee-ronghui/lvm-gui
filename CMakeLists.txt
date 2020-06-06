@@ -35,4 +35,5 @@ target_link_libraries(${PROJECT_NAME}
 #    ${VTK_LIBRARIES}
     ${OpenCV_LIBS}
     ${PCL_LIBRARIES}
-    ${PROTOBUF_LIBRARIES})
+    ${PROTOBUF_LIBRARIES}
+    mysqlclient)
