@@ -7,47 +7,60 @@ MainWindow::MainWindow(QWidget *parent) :
     connected(false) {
   ui->setupUi(this);
   this->setWindowTitle ("lvm-gui");
+
+  db_.reset(new MYSQL());
+  mysql_init(db_.get());
+  if(mysql_real_connect(db_.get(), "localhost","ronghui","mysql-ronghui","lvm_db",0, NULL, CLIENT_FOUND_ROWS)) {
+    std::cout << "connect mysql success." << std::endl;
+  }
+
+  config_ = new Config(this);
+  config_->setModal(false);
+
+  currentTimeLabel = new QLabel;
+  ui->statusbar->addWidget(currentTimeLabel);
+
+  statusLabel = new QLabel;
+  ui->statusbar->addPermanentWidget(statusLabel);
+
   tcpClient = new QTcpSocket(this);
   tcpClient->abort();
   timer = new QTimer(this);
-  ui->btnConn->setEnabled(true);
+  timer->start(300);
+  //ui->btnConn->setEnabled(true);
 
   timestamp = std::chrono::system_clock::now();
+
+  QSettings setting("./config.ini",QSettings::IniFormat);
+  ip_ = setting.value("ip").toString();
+  port_ = setting.value("port").toString();
 
   initviewer();
 
   connect(tcpClient, SIGNAL(readyRead()), this, SLOT(ReadData()));
-  connect(tcpClient, SIGNAL(error(QAbstractSocket::SocketError)), \
-            this, SLOT(ReadError(QAbstractSocket::SocketError)));
+  connect(tcpClient, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(ReadError(QAbstractSocket::SocketError)));
   connect(timer, SIGNAL(timeout()), this, SLOT(CheckHeartBeat()));
   connect(timer, SIGNAL(timeout()), this, SLOT(VisualSpin()));
+  connect(timer, SIGNAL(timeout()), this, SLOT(TimeUpdate()));
+  connect(config_, SIGNAL(ConfigSendDataToMainWindow(QString, QString)), this, SLOT(MainWindowReceiveDataFromConfig(QString, QString)));
+  connect(this, SIGNAL(MainWindowSendDataToConfig(QString, QString)), config_, SLOT(ConfigReceiveDataFromMainWindow(QString, QString)));
+
 }
 
 MainWindow::~MainWindow() {
   delete ui;
 }
 
-void MainWindow::on_btnConn_clicked() {
-  if (ui->btnConn->text() == "connect") {
-    tcpClient->connectToHost(ui->edtIP->text(), ui->edtPort->text().toInt());
-    if (tcpClient->waitForConnected(1000)) {
-      ui->btnConn->setText("disconnect");
-      ui->edtIP->setDisabled(true);
-      ui->edtPort->setDisabled(true);
-    }
-    timer->start(300);
-  } else {
-    tcpClient->disconnectFromHost();
-    buffer.clear();
-    if(tcpClient->state() == QAbstractSocket::UnconnectedState || tcpClient->waitForDisconnected(1000)) {
-      ui->btnConn->setText("connect");
-      ui->edtIP->setEnabled(true);
-      ui->edtPort->setEnabled(true);
-      ui->temperature->setText("");
-      ui->status->setText("");
-    }
-    timer->stop();
-  }
+void MainWindow::closeEvent(QCloseEvent *event) {
+  QSettings setting("./config.ini",QSettings::IniFormat);
+  setting.setValue("ip", ip_);
+  setting.setValue("port", port_);
+}
+
+void MainWindow::TimeUpdate() {
+  QDateTime current_time = QDateTime::currentDateTime();
+  QString timestr = current_time.toString( "yyyy/MM/dd hh:mm:ss");
+  currentTimeLabel->setText(timestr);
 }
 
 void MainWindow::ReadData() {
@@ -60,36 +73,74 @@ void MainWindow::ReadData() {
       if(buffer.size() >= 4 + msg_length) {
         message.Clear();
         message.ParseFromArray(buffer.data() + 4, msg_length);
-        if(message.has_info()) {
-          ui->temperature->setText(QString::number(message.info().temperature()));
-          ui->status->setText(QString(lrobot::lidarvolumemeas::State_Name(message.info().state()).c_str()));
-        } else if (message.has_result()) {
-          ui->length->setText(QString::number(message.result().statistic().length()));
-          ui->width->setText(QString::number(message.result().statistic().width()));
-          ui->height->setText(QString::number(message.result().statistic().height()));
-          ui->volume->setText(QString::number(message.result().statistic().volume()));
-          ui->timestamp->setText(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-
-          clearmodel();
-
-          if(message.result().model().points().size() > 0) {
-            for(auto p : message.result().model().points()) {
-              model->points.emplace_back(pcl::PointXYZ{p.x(), p.y(), p.z()});
+        switch(message.data_case()) {
+          case lrobot::lidarvolumemeas::Message::kInfo: {
+            statusLabel->setText(QString(lrobot::lidarvolumemeas::State_Name(message.info().state()).c_str()));
+            break;
+          } case lrobot::lidarvolumemeas::Message::kScan: {
+            clearmodel();
+            if(message.scan().points().size() > 0) {
+              for(auto p : message.scan().points()) {
+                model->points.emplace_back(pcl::PointXYZ{p.x(), p.y(), p.z()});
+              }
             }
-          } else {
-            model->points.resize(2000);
-            for (size_t i = 0; i < 2000; ++i)
-            {
-              model->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
-              model->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
-              model->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+            model->height = 1;
+            model->width = model->points.size();
+            model->is_dense = false;
+            float fovy = 0.8575f;
+            Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
+            intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
+            intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
+            intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
+
+            Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
+            extrinsics << 0.00711892,     0.10875,   -0.994044,     5.21231,
+                            0.999962, -0.00572975,  0.00653447,   0.0659031,
+                           -0.004985,   -0.994053,   -0.108786,     4.50848,
+                                   0,           0,           0,           1;
+            viewer->setCameraParameters(intrinsics, extrinsics);
+            viewer->updatePointCloud(model, "model");
+            ui->qvtkWidget->update();
+            break;
+          } case lrobot::lidarvolumemeas::Message::kResult: {
+            ui->length->setText(QString::number(message.result().statistic().length()));
+            ui->width->setText(QString::number(message.result().statistic().width()));
+            ui->height->setText(QString::number(message.result().statistic().height()));
+            ui->volume->setText(QString::number(message.result().statistic().volume()));
+            clearmodel();
+            if(message.result().model().points().size() > 0) {
+              for(auto p : message.result().model().points()) {
+                model->points.emplace_back(pcl::PointXYZ{p.x(), p.y(), p.z()});
+              }
+            } else {
+              model->points.resize(2000);
+              for (size_t i = 0; i < 2000; ++i)
+              {
+                model->points[i].x = 1024 * rand () / (RAND_MAX + 1.0f);
+                model->points[i].y = 1024 * rand () / (RAND_MAX + 1.0f);
+                model->points[i].z = 1024 * rand () / (RAND_MAX + 1.0f);
+              }
             }
+            model->height = 1;
+            model->width = model->points.size();
+            model->is_dense = false;
+
+            float fovy = 0.81f;
+            Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
+            intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
+            intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
+            intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
+
+            Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
+            extrinsics <<  0.755122, -0.236257, -0.611534,   11.9141,
+                            0.65472,  0.319672,  0.684947,  -7.88965,
+                          0.0336673, -0.917601,  0.396073,  0.178935,
+                                  0,         0,         0,         1;
+            viewer->setCameraParameters(intrinsics, extrinsics);
+            viewer->updatePointCloud(model, "model");
+            ui->qvtkWidget->update();
+            break;
           }
-          model->height = 1;
-          model->width = model->points.size();
-          model->is_dense = false;
-          viewer->updatePointCloud(model, "model");
-          ui->qvtkWidget->update();
         }
         buffer.remove(0, 4 + msg_length);
       } else {
@@ -101,18 +152,18 @@ void MainWindow::ReadData() {
 
 void MainWindow::ReadError(QAbstractSocket::SocketError) {
   tcpClient->disconnectFromHost();
-  ui->btnConn->setText(tr("connect"));
+  //ui->btnConn->setText(tr("connect"));
 }
 
 void MainWindow::CheckHeartBeat() {
-  auto tmp = std::chrono::system_clock::now();
-  int duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(tmp - timestamp).count();
-  if (duration_ms > 2000) {
-    ui->temperature->setStyleSheet("QLabel{background:#FF6666;}");
-    ui->status->setStyleSheet("QLabel{background:#FF6666;}");
+  if(connected) {
+    auto tmp = std::chrono::system_clock::now();
+    int duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(tmp - timestamp).count();
+    if (duration_ms > 2000) {
+      statusLabel->setText("CheckHeartBeat Failed.");
+    }
   } else {
-    ui->temperature->setStyleSheet("QLabel{background:#009999;}");
-    ui->status->setStyleSheet("QLabel{background:#009999;}");
+    statusLabel->setText("offline");
   }
 }
 
@@ -123,6 +174,16 @@ void MainWindow::VisualSpin() {
   if (mesh->polygons.size() > 0) {
     viewer->updatePolygonMesh(*mesh, "mesh");
   }
+  auto pose = viewer->getViewerPose();
+  std::cout << "==================" << std::endl;
+  std::cout << "viewer pose: \n" << pose.matrix() << std::endl;
+
+  pcl::visualization::Camera camera;
+  viewer->getCameraParameters(camera);
+  std::cout << "camera fovy: " << camera.fovy << std::endl;
+  std::cout << "camera wind: " << camera.window_size[0] << ", " << camera.window_size[1] << std::endl;
+  std::cout << "ui size: " << ui->qvtkWidget->size().width() << ", " << ui->qvtkWidget->size().height() << std::endl;
+
   ui->qvtkWidget->update();
 }
 
@@ -146,8 +207,10 @@ void MainWindow::initviewer() {
   mesh->polygons.emplace_back(v);
 
   viewer->addPointCloud(model, "model");
+  viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "model");
   viewer->addPolygonMesh(*mesh, "mesh");
-  viewer->resetCamera();
+  viewer->initCameraParameters();
+  viewer->setBackgroundColor(164.0 / 255.0, 164.0 / 255.0, 164.0 / 255.0);
   ui->qvtkWidget->update();
   clearmodel();
 }
@@ -158,4 +221,37 @@ void MainWindow::clearmodel() {
   mesh->cloud.height = 1;
   mesh->cloud.data.clear();
   mesh->polygons.clear();
+}
+
+void MainWindow::on_actionconfig_triggered() {
+  emit MainWindowSendDataToConfig(ip_, port_);
+  config_->show();
+}
+
+void MainWindow::on_actionconnect_triggered() {
+  if(ip_.isEmpty() || port_.isEmpty()) {
+    QMessageBox::warning(this,"Warning","Invalid IP address or port.");
+  } else {
+    if (ui->actionconnect->text() == "connect") {
+      tcpClient->connectToHost(ip_, port_.toInt());
+      if (tcpClient->waitForConnected(1000)) {
+        ui->actionconnect->setText("disconnect");
+        connected = true;
+      } else {
+        QMessageBox::warning(this,"Warning","connect failed.");
+      }
+    } else {
+      tcpClient->disconnectFromHost();
+      buffer.clear();
+      if(tcpClient->state() == QAbstractSocket::UnconnectedState || tcpClient->waitForDisconnected(1000)) {
+        ui->actionconnect->setText("connect");
+      }
+      connected = false;
+    }
+  }
+}
+
+void MainWindow::MainWindowReceiveDataFromConfig(QString ip, QString port) {
+  ip_ = ip;
+  port_ = port;
 }
