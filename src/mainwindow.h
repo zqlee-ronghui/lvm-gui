@@ -11,16 +11,20 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include <QDateTime>
+#include <QFileDialog>
 
 #include "mysql/mysql.h"
 
 #include "pcl/point_types.h"
 #include "pcl/point_cloud.h"
 #include "pcl/PolygonMesh.h"
+#include "pcl/io/ply_io.h"
+#include "pcl/io/pcd_io.h"
 #include "pcl/visualization/pcl_visualizer.h"
 #include "vtkRenderWindow.h"
 #include "proto/message.pb.h"
 #include "config.h"
+#include "about.h"
 
 namespace Ui {
 class MainWindow;
@@ -43,6 +47,10 @@ class MainWindow : public QMainWindow {
 
   void on_actionconfig_triggered();
   void on_actionconnect_triggered();
+  void on_actionscan_view_triggered();
+  void on_actionmodel_view_triggered();
+  void on_actionabout_triggered();
+  void on_actionsave_model_triggered();
   void MainWindowReceiveDataFromConfig(QString ip, QString port);
 
   signals:
@@ -55,6 +63,7 @@ class MainWindow : public QMainWindow {
 
   Ui::MainWindow *ui;
   QDialog *config_;
+  QDialog *about_;
   QTcpSocket *tcpClient;
   QTimer *timer;
   QLabel *currentTimeLabel;
@@ -73,6 +82,7 @@ class MainWindow : public QMainWindow {
   pcl::PolygonMeshPtr mesh;
 
   std::unique_ptr<MYSQL> db_;
+  int save_index;
 };
 
 #endif // MAINWINDOW_H

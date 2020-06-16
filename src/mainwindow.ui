@@ -51,7 +51,7 @@
      <widget class="QLabel" name="height">
       <property name="font">
        <font>
-        <pointsize>18</pointsize>
+        <pointsize>24</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -82,7 +82,7 @@
      <widget class="QLabel" name="volume">
       <property name="font">
        <font>
-        <pointsize>18</pointsize>
+        <pointsize>24</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -106,7 +106,7 @@
      <widget class="QLabel" name="length">
       <property name="font">
        <font>
-        <pointsize>18</pointsize>
+        <pointsize>24</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -123,7 +123,7 @@
      <widget class="QLabel" name="width">
       <property name="font">
        <font>
-        <pointsize>18</pointsize>
+        <pointsize>24</pointsize>
         <weight>75</weight>
         <bold>true</bold>
        </font>
@@ -171,19 +171,29 @@
     <addaction name="actionconfig"/>
     <addaction name="actionconnect"/>
    </widget>
-   <widget class="QMenu" name="menuabout">
+   <widget class="QMenu" name="menufile">
     <property name="title">
-     <string>search</string>
+     <string>file</string>
     </property>
+    <addaction name="actionsave_model"/>
    </widget>
-   <widget class="QMenu" name="menuabout_2">
+   <widget class="QMenu" name="menuview">
+    <property name="title">
+     <string>view</string>
+    </property>
+    <addaction name="actionscan_view"/>
+    <addaction name="actionmodel_view"/>
+   </widget>
+   <widget class="QMenu" name="menuabout">
     <property name="title">
      <string>about</string>
     </property>
+    <addaction name="actionabout"/>
    </widget>
    <addaction name="menuconfig"/>
+   <addaction name="menufile"/>
+   <addaction name="menuview"/>
    <addaction name="menuabout"/>
-   <addaction name="menuabout_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionconfig">
@@ -194,6 +204,26 @@
   <action name="actionconnect">
    <property name="text">
     <string>connect</string>
+   </property>
+  </action>
+  <action name="actionscan_view">
+   <property name="text">
+    <string>scan view</string>
+   </property>
+  </action>
+  <action name="actionmodel_view">
+   <property name="text">
+    <string>model view</string>
+   </property>
+  </action>
+  <action name="actionabout">
+   <property name="text">
+    <string>about</string>
+   </property>
+  </action>
+  <action name="actionsave_model">
+   <property name="text">
+    <string>save model</string>
    </property>
   </action>
  </widget>

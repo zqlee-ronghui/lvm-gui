@@ -7,21 +7,25 @@ MainWindow::MainWindow(QWidget *parent) :
     connected(false) {
   ui->setupUi(this);
   this->setWindowTitle ("lvm-gui");
-
-  db_.reset(new MYSQL());
-  mysql_init(db_.get());
-  if(mysql_real_connect(db_.get(), "localhost","ronghui","mysql-ronghui","lvm_db",0, NULL, CLIENT_FOUND_ROWS)) {
-    std::cout << "connect mysql success." << std::endl;
-  }
+  save_index = 0;
+//  db_.reset(new MYSQL());
+//  mysql_init(db_.get());
+//  if(mysql_real_connect(db_.get(), "localhost","ronghui","mysql-ronghui","lvm_db",0, NULL, CLIENT_FOUND_ROWS)) {
+//    std::cout << "connect mysql success." << std::endl;
+//  }
 
   config_ = new Config(this);
   config_->setModal(false);
+
+  about_ = new About(this);
+  about_->setModal(false);
 
   currentTimeLabel = new QLabel;
   ui->statusbar->addWidget(currentTimeLabel);
 
   statusLabel = new QLabel;
   ui->statusbar->addPermanentWidget(statusLabel);
+  ui->statusbar->setSizeGripEnabled(false);
 
   tcpClient = new QTcpSocket(this);
   tcpClient->abort();
@@ -87,18 +91,7 @@ void MainWindow::ReadData() {
             model->height = 1;
             model->width = model->points.size();
             model->is_dense = false;
-            float fovy = 0.8575f;
-            Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
-            intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
-            intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
-            intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
 
-            Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
-            extrinsics << 0.00711892,     0.10875,   -0.994044,     5.21231,
-                            0.999962, -0.00572975,  0.00653447,   0.0659031,
-                           -0.004985,   -0.994053,   -0.108786,     4.50848,
-                                   0,           0,           0,           1;
-            viewer->setCameraParameters(intrinsics, extrinsics);
             viewer->updatePointCloud(model, "model");
             ui->qvtkWidget->update();
             break;
@@ -125,18 +118,6 @@ void MainWindow::ReadData() {
             model->width = model->points.size();
             model->is_dense = false;
 
-            float fovy = 0.81f;
-            Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
-            intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
-            intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
-            intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
-
-            Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
-            extrinsics <<  0.755122, -0.236257, -0.611534,   11.9141,
-                            0.65472,  0.319672,  0.684947,  -7.88965,
-                          0.0336673, -0.917601,  0.396073,  0.178935,
-                                  0,         0,         0,         1;
-            viewer->setCameraParameters(intrinsics, extrinsics);
             viewer->updatePointCloud(model, "model");
             ui->qvtkWidget->update();
             break;
@@ -159,8 +140,14 @@ void MainWindow::CheckHeartBeat() {
   if(connected) {
     auto tmp = std::chrono::system_clock::now();
     int duration_ms = std::chrono::duration_cast<std::chrono::milliseconds>(tmp - timestamp).count();
-    if (duration_ms > 2000) {
+    if (duration_ms > 5000) {
       statusLabel->setText("CheckHeartBeat Failed.");
+      tcpClient->disconnectFromHost();
+      buffer.clear();
+      if(tcpClient->state() == QAbstractSocket::UnconnectedState || tcpClient->waitForDisconnected(1000)) {
+        ui->actionconnect->setText("connect");
+      }
+      connected = false;
     }
   } else {
     statusLabel->setText("offline");
@@ -174,15 +161,15 @@ void MainWindow::VisualSpin() {
   if (mesh->polygons.size() > 0) {
     viewer->updatePolygonMesh(*mesh, "mesh");
   }
-  auto pose = viewer->getViewerPose();
-  std::cout << "==================" << std::endl;
-  std::cout << "viewer pose: \n" << pose.matrix() << std::endl;
-
-  pcl::visualization::Camera camera;
-  viewer->getCameraParameters(camera);
-  std::cout << "camera fovy: " << camera.fovy << std::endl;
-  std::cout << "camera wind: " << camera.window_size[0] << ", " << camera.window_size[1] << std::endl;
-  std::cout << "ui size: " << ui->qvtkWidget->size().width() << ", " << ui->qvtkWidget->size().height() << std::endl;
+//  auto pose = viewer->getViewerPose();
+//  std::cout << "==================" << std::endl;
+//  std::cout << "viewer pose: \n" << pose.matrix() << std::endl;
+//
+//  pcl::visualization::Camera camera;
+//  viewer->getCameraParameters(camera);
+//  std::cout << "camera fovy: " << camera.fovy << std::endl;
+//  std::cout << "camera wind: " << camera.window_size[0] << ", " << camera.window_size[1] << std::endl;
+//  std::cout << "ui size: " << ui->qvtkWidget->size().width() << ", " << ui->qvtkWidget->size().height() << std::endl;
 
   ui->qvtkWidget->update();
 }
@@ -209,7 +196,23 @@ void MainWindow::initviewer() {
   viewer->addPointCloud(model, "model");
   viewer->setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, "model");
   viewer->addPolygonMesh(*mesh, "mesh");
+
+  for(float y = -3; y <= 3; y += 1.0) {
+    viewer->addLine<pcl::PointXYZ, pcl::PointXYZ>(pcl::PointXYZ(-2, y, 6), pcl::PointXYZ(10, y, 6), "yline" + std::to_string(y));
+  }
+  for(float x = -2; x <= 10; x += 1.0) {
+    viewer->addLine<pcl::PointXYZ, pcl::PointXYZ>(pcl::PointXYZ(x, -3, 6), pcl::PointXYZ(x, 3, 6), "xline" + std::to_string(x));
+  }
+//  pcl::ModelCoefficients plane_coeff;
+//  plane_coeff.values.resize (4);    // We need 4 values
+//  plane_coeff.values[0] = 0;
+//  plane_coeff.values[1] = 0;
+//  plane_coeff.values[2] = 1;
+//  plane_coeff.values[3] = -6;
+//  viewer->addPlane(plane_coeff, "ground");
+
   viewer->initCameraParameters();
+  viewer->setCameraPosition(0, 0, 1, 0, 0, 0);
   viewer->setBackgroundColor(164.0 / 255.0, 164.0 / 255.0, 164.0 / 255.0);
   ui->qvtkWidget->update();
   clearmodel();
@@ -237,6 +240,7 @@ void MainWindow::on_actionconnect_triggered() {
       if (tcpClient->waitForConnected(1000)) {
         ui->actionconnect->setText("disconnect");
         connected = true;
+        timestamp = std::chrono::system_clock::now();
       } else {
         QMessageBox::warning(this,"Warning","connect failed.");
       }
@@ -249,6 +253,69 @@ void MainWindow::on_actionconnect_triggered() {
       connected = false;
     }
   }
+}
+
+void MainWindow::on_actionscan_view_triggered() {
+  float fovy = 0.8575f;
+  Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
+  intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
+  intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
+  intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
+
+  Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
+  extrinsics << 0.00711892,     0.10875,   -0.994044,     5.21231,
+      0.999962, -0.00572975,  0.00653447,   0.0659031,
+      -0.004985,   -0.994053,   -0.108786,     4.50848,
+      0,           0,           0,           1;
+  viewer->setCameraParameters(intrinsics, extrinsics);
+}
+
+void MainWindow::on_actionmodel_view_triggered() {
+  float fovy = 0.81f;
+  Eigen::Matrix3f intrinsics(Eigen::Matrix3f::Identity());
+  intrinsics(0, 2) = ui->qvtkWidget->width() * 0.5f;
+  intrinsics(1, 2) = ui->qvtkWidget->height() * 0.5f;
+  intrinsics(1, 1) = intrinsics(1, 2) / fovy * 2.0f;
+
+  Eigen::Matrix4f extrinsics(Eigen::Matrix4f::Identity());
+  extrinsics <<  0.755122, -0.236257, -0.611534,   11.9141,
+      0.65472,  0.319672,  0.684947,  -7.88965,
+      0.0336673, -0.917601,  0.396073,  0.178935,
+      0,         0,         0,         1;
+  viewer->setCameraParameters(intrinsics, extrinsics);
+}
+
+void MainWindow::on_actionabout_triggered() {
+  about_->show();
+}
+
+void MainWindow::on_actionsave_model_triggered() {
+  if(model->size() > 0) {
+    QString filename = QFileDialog::getSaveFileName(this, tr("Open point cloud"), QString("model_%1.pcd").arg(save_index++), tr("Point cloud data (*.pcd *.ply)"));
+
+    if(filename.isEmpty()) {
+      return;
+    }
+
+    int return_status;
+    if(filename.endsWith(".pcd", Qt::CaseInsensitive)) {
+      return_status = pcl::io::savePCDFileBinary (filename.toStdString(), *model);
+    } else if(filename.endsWith(".ply", Qt::CaseInsensitive)) {
+      return_status = pcl::io::savePLYFileBinary (filename.toStdString(), *model);
+    } else {
+      filename.append(".ply");
+      return_status = pcl::io::savePLYFileBinary (filename.toStdString (), *model);
+    }
+
+    if (return_status != 0) {
+      QMessageBox::warning(this,"Warning","Save model failed.");
+      return;
+    }
+  } else {
+    QMessageBox::warning(this,"Warning","model is empty.");
+    return;
+  }
+
 }
 
 void MainWindow::MainWindowReceiveDataFromConfig(QString ip, QString port) {
