@@ -602,6 +602,13 @@ class Statistic : public ::google::protobuf::Message /* @@protoc_insertion_point
   double volume() const;
   void set_volume(double value);
 
+  // required double velocity = 5;
+  bool has_velocity() const;
+  void clear_velocity();
+  static const int kVelocityFieldNumber = 5;
+  double velocity() const;
+  void set_velocity(double value);
+
   // @@protoc_insertion_point(class_scope:lrobot.lidarvolumemeas.Statistic)
  private:
   void set_has_length();
@@ -612,6 +619,8 @@ class Statistic : public ::google::protobuf::Message /* @@protoc_insertion_point
   void clear_has_height();
   void set_has_volume();
   void clear_has_volume();
+  void set_has_velocity();
+  void clear_has_velocity();
 
   // helper for ByteSizeLong()
   size_t RequiredFieldsByteSizeFallback() const;
@@ -623,6 +632,7 @@ class Statistic : public ::google::protobuf::Message /* @@protoc_insertion_point
   double width_;
   double height_;
   double volume_;
+  double velocity_;
   friend struct protobuf_proto_2fmessage_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -836,10 +846,10 @@ class Scan : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
 
   // accessors -------------------------------------------------------
 
-  // repeated .lrobot.lidarvolumemeas.Point points = 1;
+  // repeated .lrobot.lidarvolumemeas.Point points = 2;
   int points_size() const;
   void clear_points();
-  static const int kPointsFieldNumber = 1;
+  static const int kPointsFieldNumber = 2;
   const ::lrobot::lidarvolumemeas::Point& points(int index) const;
   ::lrobot::lidarvolumemeas::Point* mutable_points(int index);
   ::lrobot::lidarvolumemeas::Point* add_points();
@@ -848,13 +858,25 @@ class Scan : public ::google::protobuf::Message /* @@protoc_insertion_point(clas
   const ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point >&
       points() const;
 
+  // required .lrobot.lidarvolumemeas.Statistic statistic = 1;
+  bool has_statistic() const;
+  void clear_statistic();
+  static const int kStatisticFieldNumber = 1;
+  const ::lrobot::lidarvolumemeas::Statistic& statistic() const;
+  ::lrobot::lidarvolumemeas::Statistic* mutable_statistic();
+  ::lrobot::lidarvolumemeas::Statistic* release_statistic();
+  void set_allocated_statistic(::lrobot::lidarvolumemeas::Statistic* statistic);
+
   // @@protoc_insertion_point(class_scope:lrobot.lidarvolumemeas.Scan)
  private:
+  void set_has_statistic();
+  void clear_has_statistic();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
   mutable int _cached_size_;
   ::google::protobuf::RepeatedPtrField< ::lrobot::lidarvolumemeas::Point > points_;
+  ::lrobot::lidarvolumemeas::Statistic* statistic_;
   friend struct protobuf_proto_2fmessage_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -1454,6 +1476,30 @@ inline void Statistic::set_volume(double value) {
   // @@protoc_insertion_point(field_set:lrobot.lidarvolumemeas.Statistic.volume)
 }
 
+// required double velocity = 5;
+inline bool Statistic::has_velocity() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void Statistic::set_has_velocity() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void Statistic::clear_has_velocity() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void Statistic::clear_velocity() {
+  velocity_ = 0;
+  clear_has_velocity();
+}
+inline double Statistic::velocity() const {
+  // @@protoc_insertion_point(field_get:lrobot.lidarvolumemeas.Statistic.velocity)
+  return velocity_;
+}
+inline void Statistic::set_velocity(double value) {
+  set_has_velocity();
+  velocity_ = value;
+  // @@protoc_insertion_point(field_set:lrobot.lidarvolumemeas.Statistic.velocity)
+}
+
 // -------------------------------------------------------------------
 
 // SysInfo
@@ -1511,7 +1557,53 @@ inline void SysInfo::set_temperature(double value) {
 
 // Scan
 
-// repeated .lrobot.lidarvolumemeas.Point points = 1;
+// required .lrobot.lidarvolumemeas.Statistic statistic = 1;
+inline bool Scan::has_statistic() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Scan::set_has_statistic() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Scan::clear_has_statistic() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Scan::clear_statistic() {
+  if (statistic_ != NULL) statistic_->::lrobot::lidarvolumemeas::Statistic::Clear();
+  clear_has_statistic();
+}
+inline const ::lrobot::lidarvolumemeas::Statistic& Scan::statistic() const {
+  const ::lrobot::lidarvolumemeas::Statistic* p = statistic_;
+  // @@protoc_insertion_point(field_get:lrobot.lidarvolumemeas.Scan.statistic)
+  return p != NULL ? *p : *reinterpret_cast<const ::lrobot::lidarvolumemeas::Statistic*>(
+      &::lrobot::lidarvolumemeas::_Statistic_default_instance_);
+}
+inline ::lrobot::lidarvolumemeas::Statistic* Scan::mutable_statistic() {
+  set_has_statistic();
+  if (statistic_ == NULL) {
+    statistic_ = new ::lrobot::lidarvolumemeas::Statistic;
+  }
+  // @@protoc_insertion_point(field_mutable:lrobot.lidarvolumemeas.Scan.statistic)
+  return statistic_;
+}
+inline ::lrobot::lidarvolumemeas::Statistic* Scan::release_statistic() {
+  // @@protoc_insertion_point(field_release:lrobot.lidarvolumemeas.Scan.statistic)
+  clear_has_statistic();
+  ::lrobot::lidarvolumemeas::Statistic* temp = statistic_;
+  statistic_ = NULL;
+  return temp;
+}
+inline void Scan::set_allocated_statistic(::lrobot::lidarvolumemeas::Statistic* statistic) {
+  delete statistic_;
+  statistic_ = statistic;
+  if (statistic) {
+    set_has_statistic();
+  } else {
+    clear_has_statistic();
+  }
+  // @@protoc_insertion_point(field_set_allocated:lrobot.lidarvolumemeas.Scan.statistic)
+}
+
+// repeated .lrobot.lidarvolumemeas.Point points = 2;
 inline int Scan::points_size() const {
   return points_.size();
 }

@@ -82,6 +82,7 @@ void MainWindow::ReadData() {
             statusLabel->setText(QString(lrobot::lidarvolumemeas::State_Name(message.info().state()).c_str()));
             break;
           } case lrobot::lidarvolumemeas::Message::kScan: {
+            ui->id->setText(QString::number(message.scan().statistic().velocity()));
             clearmodel();
             if(message.scan().points().size() > 0) {
               for(auto p : message.scan().points()) {
@@ -96,6 +97,7 @@ void MainWindow::ReadData() {
             ui->qvtkWidget->update();
             break;
           } case lrobot::lidarvolumemeas::Message::kResult: {
+            ui->id->setText(QString::number(message.result().statistic().velocity()));
             ui->length->setText(QString::number(message.result().statistic().length()));
             ui->width->setText(QString::number(message.result().statistic().width()));
             ui->height->setText(QString::number(message.result().statistic().height()));
