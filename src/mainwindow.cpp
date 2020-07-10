@@ -94,7 +94,10 @@ void MainWindow::ReadData() {
             model->is_dense = false;
 
             viewer->updatePointCloud(model, "model");
+#ifndef USE_PCL_VIEWER
             ui->qvtkWidget->update();
+#endif
+            on_actionscan_view_triggered();
             break;
           } case lrobot::lidarvolumemeas::Message::kResult: {
             ui->id->setText(QString::number(message.result().statistic().velocity()));
@@ -121,7 +124,10 @@ void MainWindow::ReadData() {
             model->is_dense = false;
 
             viewer->updatePointCloud(model, "model");
+#ifndef USE_PCL_VIEWER
             ui->qvtkWidget->update();
+#endif
+            on_actionmodel_view_triggered();
             break;
           }
         }
@@ -172,14 +178,21 @@ void MainWindow::VisualSpin() {
 //  std::cout << "camera fovy: " << camera.fovy << std::endl;
 //  std::cout << "camera wind: " << camera.window_size[0] << ", " << camera.window_size[1] << std::endl;
 //  std::cout << "ui size: " << ui->qvtkWidget->size().width() << ", " << ui->qvtkWidget->size().height() << std::endl;
-
+#ifndef USE_PCL_VIEWER
   ui->qvtkWidget->update();
+#else
+  viewer->spinOnce();
+#endif
 }
 
 void MainWindow::initviewer() {
+#ifdef USE_PCL_VIEWER
+  viewer.reset(new pcl::visualization::PCLVisualizer("viewer", true));
+#else
   viewer.reset(new pcl::visualization::PCLVisualizer("viewer", false));
   ui->qvtkWidget->SetRenderWindow(viewer->getRenderWindow());
   viewer->setupInteractor(ui->qvtkWidget->GetInteractor(), ui->qvtkWidget->GetRenderWindow());
+#endif
 //  viewer->addCoordinateSystem(1.0, "model", 0);
 
   model.reset(new pcl::PointCloud<pcl::PointXYZ>);
@@ -216,7 +229,9 @@ void MainWindow::initviewer() {
   viewer->initCameraParameters();
   viewer->setCameraPosition(0, 0, 1, 0, 0, 0);
   viewer->setBackgroundColor(164.0 / 255.0, 164.0 / 255.0, 164.0 / 255.0);
+#ifndef USE_PCL_VIEWER
   ui->qvtkWidget->update();
+#endif
   clearmodel();
 }
 

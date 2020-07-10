@@ -78,6 +78,7 @@ class MainWindow : public QMainWindow {
   std::chrono::system_clock::time_point timestamp;
 
   pcl::visualization::PCLVisualizer::Ptr viewer;
+
   pcl::PointCloud<pcl::PointXYZ>::Ptr model;
   pcl::PolygonMeshPtr mesh;
 

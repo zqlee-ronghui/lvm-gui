@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(lvm-gui)
 
+option(USE_PCL_VIEWER OFF)
+
 set(CMAKE_CXX_STANDARD 14)
 
 set(AUTOGEN_TARGETS_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
@@ -8,6 +10,10 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
+
+if(USE_PCL_VIEWER)
+  add_definitions(-DUSE_PCL_VIEWER)
+endif()
 
 #find_package(VTK REQUIRED)
 find_package(ProtoBuf REQUIRED)
