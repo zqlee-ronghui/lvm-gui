@@ -144,7 +144,7 @@
      </widget>
     </item>
     <item row="0" column="0" rowspan="10">
-     <widget class="QVTKWidget" name="qvtkWidget">
+     <widget class="QVTKWidget" name="qvtkWidget" native="true">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -190,9 +190,17 @@
     </property>
     <addaction name="actionabout"/>
    </widget>
+   <widget class="QMenu" name="menudatabase">
+    <property name="title">
+     <string>database</string>
+    </property>
+    <addaction name="actionconfig_2"/>
+    <addaction name="actionopen"/>
+   </widget>
    <addaction name="menuconfig"/>
    <addaction name="menufile"/>
    <addaction name="menuview"/>
+   <addaction name="menudatabase"/>
    <addaction name="menuabout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -224,6 +232,16 @@
   <action name="actionsave_model">
    <property name="text">
     <string>save model</string>
+   </property>
+  </action>
+  <action name="actionopen">
+   <property name="text">
+    <string>show</string>
+   </property>
+  </action>
+  <action name="actionconfig_2">
+   <property name="text">
+    <string>config</string>
    </property>
   </action>
  </widget>

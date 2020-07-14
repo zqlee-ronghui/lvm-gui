@@ -8,11 +8,24 @@ MainWindow::MainWindow(QWidget *parent) :
   ui->setupUi(this);
   this->setWindowTitle ("lvm-gui");
   save_index = 0;
-//  db_.reset(new MYSQL());
-//  mysql_init(db_.get());
-//  if(mysql_real_connect(db_.get(), "localhost","ronghui","mysql-ronghui","lvm_db",0, NULL, CLIENT_FOUND_ROWS)) {
-//    std::cout << "connect mysql success." << std::endl;
-//  }
+  dir_ = "/home/luoman/Documents/data";
+
+  QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+  db.setHostName("localhost");
+  db.setDatabaseName("lvm_db");       //这里输入你的数据库名
+  db.setUserName("ronghui");
+  db.setPassword("mysql-ronghui");   //这里输入你的密码
+  if (!db.open()) {
+    QMessageBox::critical(0, QObject::tr("无法打开数据库"), "无法创建数据库连接！ ", QMessageBox::Cancel);
+  }
+  mysql_model_.reset(new QSqlTableModel(this, db));
+  mysql_model_->setTable("measurements");
+  mysql_model_->select();
+  mysql_model_->removeColumn(0);
+  mysql_model_->setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+  database_ui_ = new DatabaseUI(this, mysql_model_.get());
+  database_ui_->setModal(false);
 
   config_ = new Config(this);
   config_->setModal(false);
@@ -98,6 +111,9 @@ void MainWindow::ReadData() {
             ui->qvtkWidget->update();
 #endif
             on_actionscan_view_triggered();
+            std::string tmp;
+            lrobot::common::algorithm::Base64::Encode(message.SerializeAsString(), &tmp);
+            scans_.emplace_back(std::make_pair(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count(), tmp));
             break;
           } case lrobot::lidarvolumemeas::Message::kResult: {
             ui->id->setText(QString::number(message.result().statistic().velocity()));
@@ -128,6 +144,36 @@ void MainWindow::ReadData() {
             ui->qvtkWidget->update();
 #endif
             on_actionmodel_view_triggered();
+//            nlohmann::json j;
+//            std::string tmp;
+//            lrobot::common::algorithm::Base64::Encode(message.SerializeAsString(), &tmp);
+//            j["model"] = tmp;
+//            for(auto scan : scans_) {
+//              j["scans"][std::to_string(scan.first)] = scan.second;
+//            }
+            scans_.clear();
+            int id = mysql_model_->rowCount();
+            int timestamp =
+                std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+            QString file = dir_ + QString("/") + QString::number(timestamp) + QString(".pcd");
+            QSqlRecord new_record = mysql_model_->record();
+            //new_record.setGenerated("id", false);
+            //new_record.setValue("id", id);
+            new_record.setValue("timestamp", timestamp);
+            new_record.setValue("length", message.result().statistic().length());
+            new_record.setValue("width", message.result().statistic().width());
+            new_record.setValue("height", message.result().statistic().height());
+            new_record.setValue("volume", message.result().statistic().volume());
+            new_record.setValue("pointcloud", file.toStdString().c_str());
+
+            pcl::io::savePCDFileBinary(file.toStdString(), *model);
+
+            if(mysql_model_->insertRecord(id, new_record)) {
+              mysql_model_->submitAll();
+            } else {
+              std::cout << "insert failed." << std::endl;
+            }
+
             break;
           }
         }
@@ -338,4 +384,9 @@ void MainWindow::on_actionsave_model_triggered() {
 void MainWindow::MainWindowReceiveDataFromConfig(QString ip, QString port) {
   ip_ = ip;
   port_ = port;
+}
+
+void MainWindow::on_actionopen_triggered()
+{
+  database_ui_->show();
 }

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>About</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -21,7 +21,7 @@
 
 +86-136 3236 8580
 
-Copyright@2020 All Right Reserved</string>
+Copyright@2020 All Rights Reserved</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

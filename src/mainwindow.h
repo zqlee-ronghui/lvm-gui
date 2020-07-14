@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <chrono>
+#include <string>
+#include <vector>
+
 #include <QDateTime>
 #include <QMainWindow>
 #include <QMessageBox>
@@ -12,6 +15,8 @@
 #include <QTimer>
 #include <QDateTime>
 #include <QFileDialog>
+#include <QSqlTableModel>
+#include <QSqlRecord>
 
 #include "mysql/mysql.h"
 
@@ -24,7 +29,11 @@
 #include "vtkRenderWindow.h"
 #include "proto/message.pb.h"
 #include "config.h"
+#include "databaseui.h"
 #include "about.h"
+
+#include "common/base64.h"
+#include "nlohmann/json.hpp"
 
 namespace Ui {
 class MainWindow;
@@ -51,6 +60,7 @@ class MainWindow : public QMainWindow {
   void on_actionmodel_view_triggered();
   void on_actionabout_triggered();
   void on_actionsave_model_triggered();
+  void on_actionopen_triggered();
   void MainWindowReceiveDataFromConfig(QString ip, QString port);
 
   signals:
@@ -63,6 +73,7 @@ class MainWindow : public QMainWindow {
 
   Ui::MainWindow *ui;
   QDialog *config_;
+  QDialog *database_ui_;
   QDialog *about_;
   QTcpSocket *tcpClient;
   QTimer *timer;
@@ -75,6 +86,8 @@ class MainWindow : public QMainWindow {
 
   lrobot::lidarvolumemeas::Message message;
 
+  std::vector<std::pair<uint64_t, std::string>> scans_;
+
   std::chrono::system_clock::time_point timestamp;
 
   pcl::visualization::PCLVisualizer::Ptr viewer;
@@ -82,8 +95,10 @@ class MainWindow : public QMainWindow {
   pcl::PointCloud<pcl::PointXYZ>::Ptr model;
   pcl::PolygonMeshPtr mesh;
 
-  std::unique_ptr<MYSQL> db_;
+  std::shared_ptr<QSqlTableModel> mysql_model_;
   int save_index;
+
+  QString dir_;
 };
 
 #endif // MAINWINDOW_H
